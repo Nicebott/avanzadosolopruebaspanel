@@ -22,43 +22,54 @@ const Pagination: React.FC<PaginationProps> = ({
     if (totalPages <= 1) return [];
 
     const isMobile = window.innerWidth < 640;
-    const maxVisible = isMobile ? 5 : 9;
+    const siblingCount = isMobile ? 1 : 2;
     const range: (number | string)[] = [];
 
-    if (totalPages <= maxVisible) {
+    const totalNumbers = siblingCount * 2 + 3;
+    const totalBlocks = totalNumbers + 2;
+
+    if (totalPages <= totalBlocks) {
       for (let i = 1; i <= totalPages; i++) {
         range.push(i);
       }
       return range;
     }
 
-    const leftSiblingIndex = Math.max(currentPage - (isMobile ? 1 : 2), 1);
-    const rightSiblingIndex = Math.min(currentPage + (isMobile ? 1 : 2), totalPages);
+    const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+    const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages);
 
     const shouldShowLeftDots = leftSiblingIndex > 2;
     const shouldShowRightDots = rightSiblingIndex < totalPages - 1;
 
-    const firstPageIndex = 1;
-    const lastPageIndex = totalPages;
-
     if (!shouldShowLeftDots && shouldShowRightDots) {
-      const leftItemCount = isMobile ? 3 : 5;
-      const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
-      return [...leftRange, '...', totalPages];
+      const leftItemCount = 3 + 2 * siblingCount;
+      for (let i = 1; i <= leftItemCount; i++) {
+        range.push(i);
+      }
+      range.push('...');
+      range.push(totalPages);
+      return range;
     }
 
     if (shouldShowLeftDots && !shouldShowRightDots) {
-      const rightItemCount = isMobile ? 3 : 5;
-      const rightRange = Array.from({ length: rightItemCount }, (_, i) => totalPages - rightItemCount + i + 1);
-      return [1, '...', ...rightRange];
+      const rightItemCount = 3 + 2 * siblingCount;
+      range.push(1);
+      range.push('...');
+      for (let i = totalPages - rightItemCount + 1; i <= totalPages; i++) {
+        range.push(i);
+      }
+      return range;
     }
 
     if (shouldShowLeftDots && shouldShowRightDots) {
-      const middleRange = Array.from(
-        { length: rightSiblingIndex - leftSiblingIndex + 1 },
-        (_, i) => leftSiblingIndex + i
-      );
-      return [firstPageIndex, '...', ...middleRange, '...', lastPageIndex];
+      range.push(1);
+      range.push('...');
+      for (let i = leftSiblingIndex; i <= rightSiblingIndex; i++) {
+        range.push(i);
+      }
+      range.push('...');
+      range.push(totalPages);
+      return range;
     }
 
     return range;

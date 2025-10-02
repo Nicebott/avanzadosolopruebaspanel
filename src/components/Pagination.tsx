@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
@@ -16,41 +16,60 @@ const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   darkMode
 }) => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
   
   const pageNumbers = useMemo(() => {
     if (totalPages <= 1) return [];
     
-    const isMobile = window.innerWidth < 640;
     const delta = isMobile ? 1 : 2;
-    const range = [];
-    const rangeWithDots = [];
-    let l;
+    const range: number[] = [];
+    const rangeWithDots: (number | string)[] = [];
 
+    // Siempre incluir la primera página
     range.push(1);
 
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+    // Páginas alrededor de la página actual
+    const start = Math.max(2, currentPage - delta);
+    const end = Math.min(totalPages - 1, currentPage + delta);
+
+    for (let i = start; i <= end; i++) {
       range.push(i);
     }
 
+    // Siempre incluir la última página si hay más de una
     if (totalPages > 1) {
       range.push(totalPages);
     }
 
+    // Agregar puntos suspensivos donde sea necesario
     for (let i = 0; i < range.length; i++) {
-      if (l) {
-        if (range[i] - l === 2) {
-          rangeWithDots.push(l + 1);
-        } else if (range[i] - l !== 1) {
+      if (i > 0) {
+        const diff = range[i] - range[i - 1];
+        
+        if (diff === 2) {
+          // Si hay exactamente un número entre dos páginas, mostrarlo
+          rangeWithDots.push(range[i - 1] + 1);
+        } else if (diff > 2) {
+          // Si hay más de un número, mostrar puntos suspensivos
           rangeWithDots.push('...');
         }
       }
       rangeWithDots.push(range[i]);
-      l = range[i];
     }
 
     return rangeWithDots;
-  }, [currentPage, totalPages]);
+  }, [currentPage, totalPages, isMobile]);
 
   if (pageNumbers.length <= 1) return null;
 
@@ -72,7 +91,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <div className="flex items-center gap-1 sm:gap-2 justify-center overflow-x-auto scrollbar-hide">
         {pageNumbers.map((number, index) => (
           <button
-            key={index}
+            key={`page-${index}-${number}`}
             onClick={() => typeof number === 'number' ? paginate(number) : undefined}
             disabled={typeof number !== 'number'}
             className={`px-3 sm:px-4 py-2 rounded-md flex-shrink-0 min-w-[40px] sm:min-w-[44px] text-sm sm:text-base font-medium ${

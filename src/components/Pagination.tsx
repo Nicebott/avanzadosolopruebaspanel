@@ -22,48 +22,32 @@ const Pagination: React.FC<PaginationProps> = ({
     const handleResize = () => {
       setIsMobile(window.innerWidth < 640);
     };
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
-  const delta = isMobile ? 1 : 2; // Adjust range based on mobile/desktop
 
   const getPageNumbers = () => {
     if (totalPages <= 1) return [];
 
+    const delta = isMobile ? 1 : 2;
     const pages: (number | string)[] = [];
-    const range = isMobile ? 2 : 3; // Show 3 pages on mobile, 5-7 on desktop
 
-    // Calculate the range of pages to show
-    let startPage = Math.max(1, currentPage - delta);
-    let endPage = Math.min(totalPages, currentPage + delta);
+    const rangeStart = Math.max(2, currentPage - delta);
+    const rangeEnd = Math.min(totalPages - 1, currentPage + delta);
 
-    // Adjust if near the start or end
-    if (currentPage <= delta + 1) {
-      endPage = Math.min(delta * 2 + 1, totalPages);
-    }
-    if (currentPage >= totalPages - delta) {
-      startPage = Math.max(totalPages - (delta * 2), 1);
-    }
+    pages.push(1); // primera página
 
-    // Add first page and ellipsis
-    if (startPage > 1) {
-      pages.push(1);
-      if (startPage > 2) pages.push('...');
-    }
+    if (rangeStart > 2) pages.push('...'); // puntos suspensivos al inicio
 
-    // Add the page range
-    for (let i = startPage; i <= endPage; i++) {
+    for (let i = rangeStart; i <= rangeEnd; i++) {
       pages.push(i);
     }
 
-    // Add last page and ellipsis
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) pages.push('...');
-      pages.push(totalPages);
-    }
+    if (rangeEnd < totalPages - 1) pages.push('...'); // puntos suspensivos al final
+
+    pages.push(totalPages); // última página
 
     return pages;
   };
@@ -74,6 +58,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <nav className="flex justify-center items-center gap-2 mt-4 px-2 w-full" aria-label="Pagination">
+      {/* Botón anterior */}
       <button
         onClick={() => paginate(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
@@ -86,11 +71,11 @@ const Pagination: React.FC<PaginationProps> = ({
       >
         <ChevronLeft size={20} className="sm:w-5 sm:h-5" />
       </button>
-      
+
+      {/* Botones de páginas */}
       <div className="flex items-center gap-1 sm:gap-2 justify-center overflow-x-auto scrollbar-hide">
         {pageNumbers.map((number, index) => {
           const isNumber = typeof number === 'number';
-          const isActive = isNumber && number === currentPage;
           const uniqueKey = isNumber ? `page-${number}` : `dots-${index}`;
 
           return (
@@ -99,20 +84,21 @@ const Pagination: React.FC<PaginationProps> = ({
               onClick={() => isNumber ? paginate(number) : undefined}
               disabled={!isNumber}
               className={`px-3 sm:px-4 py-2 rounded-md flex-shrink-0 min-w-[40px] sm:min-w-[44px] text-sm sm:text-base font-medium ${
-                isActive
+                currentPage === number
                   ? 'bg-blue-600 text-white'
                   : darkMode
                     ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
                     : 'bg-white text-blue-600 hover:bg-blue-50'
               } ${!isNumber ? 'cursor-default hover:bg-transparent dark:hover:bg-gray-800' : 'transition-colors'}`}
-              aria-current={isActive ? 'page' : undefined}
+              aria-current={currentPage === number ? 'page' : undefined}
             >
               {number}
             </button>
           );
         })}
       </div>
-      
+
+      {/* Botón siguiente */}
       <button
         onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}

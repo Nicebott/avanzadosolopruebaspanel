@@ -22,54 +22,52 @@ const Pagination: React.FC<PaginationProps> = ({
     if (totalPages <= 1) return [];
 
     const isMobile = window.innerWidth < 640;
-    const siblingCount = isMobile ? 1 : 2;
-    const range: (number | string)[] = [];
+    const maxButtons = isMobile ? 5 : 9;
+    const range: number[] = [];
 
-    const totalNumbers = siblingCount * 2 + 3;
-    const totalBlocks = totalNumbers + 2;
-
-    if (totalPages <= totalBlocks) {
+    if (totalPages <= maxButtons) {
       for (let i = 1; i <= totalPages; i++) {
         range.push(i);
       }
       return range;
     }
 
-    const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
-    const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages);
+    // Siempre incluir la página 1
+    let startPage = 1;
+    let endPage = maxButtons;
 
-    const shouldShowLeftDots = leftSiblingIndex > 2;
-    const shouldShowRightDots = rightSiblingIndex < totalPages - 1;
+    // Ajustar el rango basado en la página actual
+    if (currentPage > Math.floor(maxButtons / 2) + 1) {
+      startPage = currentPage - Math.floor(maxButtons / 2);
+      endPage = currentPage + Math.floor(maxButtons / 2);
 
-    if (!shouldShowLeftDots && shouldShowRightDots) {
-      const leftItemCount = 3 + 2 * siblingCount;
-      for (let i = 1; i <= leftItemCount; i++) {
-        range.push(i);
+      // Si nos pasamos del final, ajustar
+      if (endPage > totalPages) {
+        endPage = totalPages;
+        startPage = totalPages - maxButtons + 1;
       }
-      range.push('...');
-      range.push(totalPages);
-      return range;
+    } else {
+      // Estamos al inicio
+      startPage = 1;
+      endPage = maxButtons;
     }
 
-    if (shouldShowLeftDots && !shouldShowRightDots) {
-      const rightItemCount = 3 + 2 * siblingCount;
+    // Siempre mostrar la página 1 si no está en el rango
+    if (startPage > 1) {
       range.push(1);
-      range.push('...');
-      for (let i = totalPages - rightItemCount + 1; i <= totalPages; i++) {
+      // Llenar el resto del rango
+      const remainingSlots = maxButtons - 1;
+      const adjustedStart = Math.max(startPage, totalPages - remainingSlots + 1);
+      for (let i = adjustedStart; i <= totalPages && range.length < maxButtons; i++) {
+        if (i > 1) {
+          range.push(i);
+        }
+      }
+    } else {
+      // Llenar normalmente desde el inicio
+      for (let i = startPage; i <= endPage && range.length < maxButtons; i++) {
         range.push(i);
       }
-      return range;
-    }
-
-    if (shouldShowLeftDots && shouldShowRightDots) {
-      range.push(1);
-      range.push('...');
-      for (let i = leftSiblingIndex; i <= rightSiblingIndex; i++) {
-        range.push(i);
-      }
-      range.push('...');
-      range.push(totalPages);
-      return range;
     }
 
     return range;

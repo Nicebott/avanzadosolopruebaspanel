@@ -145,26 +145,22 @@ const CourseTable: React.FC<CourseTableProps> = ({ courses, sections, onRateSect
                         {getModalityBadge(section.modalidad)}
                       </div>
                       <div className="space-y-2">
-                        <Tooltip content="Código y NRC del curso">
-                          <div className="flex items-center text-sm">
-                            <BookOpen size={16} className="mr-2 text-blue-500" />
-                            <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-                              {course.code} - NRC: {section.nrc}
-                            </span>
-                          </div>
-                        </Tooltip>
-                        <Tooltip content="Campus y Horario">
-                          <div className="flex items-center text-sm">
-                            <MapPin size={16} className="mr-2 text-green-500" />
-                            <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-                              {section.campus}
-                            </span>
-                            <Clock size={16} className="ml-4 mr-2 text-purple-500" />
-                            <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
-                              {section.schedule}
-                            </span>
-                          </div>
-                        </Tooltip>
+                        <div className="flex items-center text-sm">
+                          <BookOpen size={16} className="mr-2 text-blue-500" />
+                          <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+                            {course.code} - NRC: {section.nrc}
+                          </span>
+                        </div>
+                        <div className="flex items-center text-sm">
+                          <MapPin size={16} className="mr-2 text-green-500" />
+                          <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+                            {section.campus}
+                          </span>
+                          <Clock size={16} className="ml-4 mr-2 text-purple-500" />
+                          <span className={darkMode ? 'text-gray-300' : 'text-gray-600'}>
+                            {section.schedule}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

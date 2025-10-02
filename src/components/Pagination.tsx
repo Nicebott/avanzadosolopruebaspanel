@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
@@ -16,51 +16,60 @@ const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   darkMode
 }) => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
-
-  const getPageNumbers = () => {
+  
+  const pageNumbers = useMemo(() => {
     if (totalPages <= 1) return [];
 
-    const delta = isMobile ? 1 : 2;
-    const pages: (number | string)[] = [];
+    const isMobile = window.innerWidth < 640;
+    const maxVisible = isMobile ? 5 : 9;
+    const range: (number | string)[] = [];
 
-    const rangeStart = Math.max(2, currentPage - delta);
-    const rangeEnd = Math.min(totalPages - 1, currentPage + delta);
-
-    pages.push(1); // primera página
-
-    if (rangeStart > 2) pages.push('...'); // puntos suspensivos al inicio
-
-    for (let i = rangeStart; i <= rangeEnd; i++) {
-      pages.push(i);
+    if (totalPages <= maxVisible) {
+      for (let i = 1; i <= totalPages; i++) {
+        range.push(i);
+      }
+      return range;
     }
 
-    if (rangeEnd < totalPages - 1) pages.push('...'); // puntos suspensivos al final
+    const leftSiblingIndex = Math.max(currentPage - (isMobile ? 1 : 2), 1);
+    const rightSiblingIndex = Math.min(currentPage + (isMobile ? 1 : 2), totalPages);
 
-    pages.push(totalPages); // última página
+    const shouldShowLeftDots = leftSiblingIndex > 2;
+    const shouldShowRightDots = rightSiblingIndex < totalPages - 1;
 
-    return pages;
-  };
+    const firstPageIndex = 1;
+    const lastPageIndex = totalPages;
 
-  const pageNumbers = getPageNumbers();
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      const leftItemCount = isMobile ? 3 : 5;
+      const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+      return [...leftRange, '...', totalPages];
+    }
+
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      const rightItemCount = isMobile ? 3 : 5;
+      const rightRange = Array.from({ length: rightItemCount }, (_, i) => totalPages - rightItemCount + i + 1);
+      return [1, '...', ...rightRange];
+    }
+
+    if (shouldShowLeftDots && shouldShowRightDots) {
+      const middleRange = Array.from(
+        { length: rightSiblingIndex - leftSiblingIndex + 1 },
+        (_, i) => leftSiblingIndex + i
+      );
+      return [firstPageIndex, '...', ...middleRange, '...', lastPageIndex];
+    }
+
+    return range;
+  }, [currentPage, totalPages]);
 
   if (pageNumbers.length <= 1) return null;
 
   return (
     <nav className="flex justify-center items-center gap-2 mt-4 px-2 w-full" aria-label="Pagination">
-      {/* Botón anterior */}
       <button
-        onClick={() => paginate(Math.max(1, currentPage - 1))}
+        onClick={() => paginate(currentPage - 1)}
         disabled={currentPage === 1}
         className={`px-2 sm:px-3 py-2 rounded-md flex-shrink-0 ${
           darkMode
@@ -71,36 +80,31 @@ const Pagination: React.FC<PaginationProps> = ({
       >
         <ChevronLeft size={20} className="sm:w-5 sm:h-5" />
       </button>
-
-      {/* Botones de páginas */}
+      
       <div className="flex items-center gap-1 sm:gap-2 justify-center overflow-x-auto scrollbar-hide">
-        {pageNumbers.map((number, index) => {
-          const isNumber = typeof number === 'number';
-          const uniqueKey = isNumber ? `page-${number}` : `dots-${index}`;
-
-          return (
-            <button
-              key={uniqueKey}
-              onClick={() => isNumber ? paginate(number) : undefined}
-              disabled={!isNumber}
-              className={`px-3 sm:px-4 py-2 rounded-md flex-shrink-0 min-w-[40px] sm:min-w-[44px] text-sm sm:text-base font-medium ${
-                currentPage === number
+        {pageNumbers.map((number, index) => (
+          <button
+            key={index}
+            onClick={() => typeof number === 'number' ? paginate(number) : undefined}
+            disabled={typeof number !== 'number'}
+            className={`px-3 sm:px-4 py-2 rounded-md flex-shrink-0 min-w-[40px] sm:min-w-[44px] text-sm sm:text-base font-medium ${
+              currentPage === number
+                ? darkMode
                   ? 'bg-blue-600 text-white'
-                  : darkMode
-                    ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
-                    : 'bg-white text-blue-600 hover:bg-blue-50'
-              } ${!isNumber ? 'cursor-default hover:bg-transparent dark:hover:bg-gray-800' : 'transition-colors'}`}
-              aria-current={currentPage === number ? 'page' : undefined}
-            >
-              {number}
-            </button>
-          );
-        })}
+                  : 'bg-blue-600 text-white'
+                : darkMode
+                  ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
+                  : 'bg-white text-blue-600 hover:bg-blue-50'
+            } ${typeof number !== 'number' ? 'cursor-default hover:bg-transparent' : 'transition-colors'}`}
+            aria-current={currentPage === number ? 'page' : undefined}
+          >
+            {number}
+          </button>
+        ))}
       </div>
-
-      {/* Botón siguiente */}
+      
       <button
-        onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+        onClick={() => paginate(currentPage + 1)}
         disabled={currentPage === totalPages}
         className={`px-2 sm:px-3 py-2 rounded-md flex-shrink-0 ${
           darkMode

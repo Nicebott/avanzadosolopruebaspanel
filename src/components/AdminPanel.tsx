@@ -327,6 +327,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ darkMode }) => {
             </h4>
             <ul className={`text-xs md:text-sm mt-1 space-y-1 ${darkMode ? 'text-yellow-400' : 'text-yellow-700'}`}>
               <li>• Los administradores pueden eliminar cualquier tema o mensaje en los foros</li>
+              <li>• Los administradores pueden eliminar cualquier reseña de profesores</li>
               {isSuperAdmin && (
                 <>
                   <li>• Solo los SuperAdmins pueden agregar o eliminar administradores</li>

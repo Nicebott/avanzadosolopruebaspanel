@@ -28,45 +28,40 @@ const Pagination: React.FC<PaginationProps> = ({
   }, []);
 
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
-  
+  const delta = isMobile ? 1 : 2; // Adjust range based on mobile/desktop
+
   const getPageNumbers = () => {
     if (totalPages <= 1) return [];
 
-    const delta = isMobile ? 1 : 2;
     const pages: (number | string)[] = [];
-    
-    // Calcular rango de páginas a mostrar
-    let rangeStart = Math.max(2, currentPage - delta);
-    let rangeEnd = Math.min(totalPages - 1, currentPage + delta);
-    
-    // Ajustar si estamos al principio o al final
+    const range = isMobile ? 2 : 3; // Show 3 pages on mobile, 5-7 on desktop
+
+    // Calculate the range of pages to show
+    let startPage = Math.max(1, currentPage - delta);
+    let endPage = Math.min(totalPages, currentPage + delta);
+
+    // Adjust if near the start or end
     if (currentPage <= delta + 1) {
-      rangeEnd = Math.min(totalPages - 1, (delta * 2) + 2);
+      endPage = Math.min(delta * 2 + 1, totalPages);
     }
     if (currentPage >= totalPages - delta) {
-      rangeStart = Math.max(2, totalPages - (delta * 2) - 1);
+      startPage = Math.max(totalPages - (delta * 2), 1);
     }
 
-    // Página 1
-    pages.push(1);
-    
-    // Puntos suspensivos después del 1
-    if (rangeStart > 2) {
-      pages.push('...');
+    // Add first page and ellipsis
+    if (startPage > 1) {
+      pages.push(1);
+      if (startPage > 2) pages.push('...');
     }
-    
-    // Páginas del medio
-    for (let i = rangeStart; i <= rangeEnd; i++) {
+
+    // Add the page range
+    for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
     }
-    
-    // Puntos suspensivos antes del final
-    if (rangeEnd < totalPages - 1) {
-      pages.push('...');
-    }
-    
-    // Última página
-    if (totalPages > 1) {
+
+    // Add last page and ellipsis
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) pages.push('...');
       pages.push(totalPages);
     }
 
@@ -95,21 +90,22 @@ const Pagination: React.FC<PaginationProps> = ({
       <div className="flex items-center gap-1 sm:gap-2 justify-center overflow-x-auto scrollbar-hide">
         {pageNumbers.map((number, index) => {
           const isNumber = typeof number === 'number';
+          const isActive = isNumber && number === currentPage;
           const uniqueKey = isNumber ? `page-${number}` : `dots-${index}`;
-          
+
           return (
             <button
               key={uniqueKey}
               onClick={() => isNumber ? paginate(number) : undefined}
               disabled={!isNumber}
               className={`px-3 sm:px-4 py-2 rounded-md flex-shrink-0 min-w-[40px] sm:min-w-[44px] text-sm sm:text-base font-medium ${
-                currentPage === number
+                isActive
                   ? 'bg-blue-600 text-white'
                   : darkMode
                     ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
                     : 'bg-white text-blue-600 hover:bg-blue-50'
               } ${!isNumber ? 'cursor-default hover:bg-transparent dark:hover:bg-gray-800' : 'transition-colors'}`}
-              aria-current={currentPage === number ? 'page' : undefined}
+              aria-current={isActive ? 'page' : undefined}
             >
               {number}
             </button>

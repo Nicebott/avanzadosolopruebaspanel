@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
@@ -29,54 +29,58 @@ const Pagination: React.FC<PaginationProps> = ({
 
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
   
-  const pageNumbers = useMemo(() => {
+  const getPageNumbers = () => {
     if (totalPages <= 1) return [];
-    
+
     const delta = isMobile ? 1 : 2;
-    const range: number[] = [];
-    const rangeWithDots: (number | string)[] = [];
-
-    // Siempre incluir la primera página
-    range.push(1);
-
-    // Páginas alrededor de la página actual
-    const start = Math.max(2, currentPage - delta);
-    const end = Math.min(totalPages - 1, currentPage + delta);
-
-    for (let i = start; i <= end; i++) {
-      range.push(i);
+    const pages: (number | string)[] = [];
+    
+    // Calcular rango de páginas a mostrar
+    let rangeStart = Math.max(2, currentPage - delta);
+    let rangeEnd = Math.min(totalPages - 1, currentPage + delta);
+    
+    // Ajustar si estamos al principio o al final
+    if (currentPage <= delta + 1) {
+      rangeEnd = Math.min(totalPages - 1, (delta * 2) + 2);
+    }
+    if (currentPage >= totalPages - delta) {
+      rangeStart = Math.max(2, totalPages - (delta * 2) - 1);
     }
 
-    // Siempre incluir la última página si hay más de una
+    // Página 1
+    pages.push(1);
+    
+    // Puntos suspensivos después del 1
+    if (rangeStart > 2) {
+      pages.push('...');
+    }
+    
+    // Páginas del medio
+    for (let i = rangeStart; i <= rangeEnd; i++) {
+      pages.push(i);
+    }
+    
+    // Puntos suspensivos antes del final
+    if (rangeEnd < totalPages - 1) {
+      pages.push('...');
+    }
+    
+    // Última página
     if (totalPages > 1) {
-      range.push(totalPages);
+      pages.push(totalPages);
     }
 
-    // Agregar puntos suspensivos donde sea necesario
-    for (let i = 0; i < range.length; i++) {
-      if (i > 0) {
-        const diff = range[i] - range[i - 1];
-        
-        if (diff === 2) {
-          // Si hay exactamente un número entre dos páginas, mostrarlo
-          rangeWithDots.push(range[i - 1] + 1);
-        } else if (diff > 2) {
-          // Si hay más de un número, mostrar puntos suspensivos
-          rangeWithDots.push('...');
-        }
-      }
-      rangeWithDots.push(range[i]);
-    }
+    return pages;
+  };
 
-    return rangeWithDots;
-  }, [currentPage, totalPages, isMobile]);
+  const pageNumbers = getPageNumbers();
 
   if (pageNumbers.length <= 1) return null;
 
   return (
     <nav className="flex justify-center items-center gap-2 mt-4 px-2 w-full" aria-label="Pagination">
       <button
-        onClick={() => paginate(currentPage - 1)}
+        onClick={() => paginate(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
         className={`px-2 sm:px-3 py-2 rounded-md flex-shrink-0 ${
           darkMode
@@ -89,29 +93,32 @@ const Pagination: React.FC<PaginationProps> = ({
       </button>
       
       <div className="flex items-center gap-1 sm:gap-2 justify-center overflow-x-auto scrollbar-hide">
-        {pageNumbers.map((number, index) => (
-          <button
-            key={`page-${index}-${number}`}
-            onClick={() => typeof number === 'number' ? paginate(number) : undefined}
-            disabled={typeof number !== 'number'}
-            className={`px-3 sm:px-4 py-2 rounded-md flex-shrink-0 min-w-[40px] sm:min-w-[44px] text-sm sm:text-base font-medium ${
-              currentPage === number
-                ? darkMode
+        {pageNumbers.map((number, index) => {
+          const isNumber = typeof number === 'number';
+          const uniqueKey = isNumber ? `page-${number}` : `dots-${index}`;
+          
+          return (
+            <button
+              key={uniqueKey}
+              onClick={() => isNumber ? paginate(number) : undefined}
+              disabled={!isNumber}
+              className={`px-3 sm:px-4 py-2 rounded-md flex-shrink-0 min-w-[40px] sm:min-w-[44px] text-sm sm:text-base font-medium ${
+                currentPage === number
                   ? 'bg-blue-600 text-white'
-                  : 'bg-blue-600 text-white'
-                : darkMode
-                  ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
-                  : 'bg-white text-blue-600 hover:bg-blue-50'
-            } ${typeof number !== 'number' ? 'cursor-default hover:bg-transparent' : 'transition-colors'}`}
-            aria-current={currentPage === number ? 'page' : undefined}
-          >
-            {number}
-          </button>
-        ))}
+                  : darkMode
+                    ? 'bg-gray-800 text-blue-400 hover:bg-gray-700'
+                    : 'bg-white text-blue-600 hover:bg-blue-50'
+              } ${!isNumber ? 'cursor-default hover:bg-transparent dark:hover:bg-gray-800' : 'transition-colors'}`}
+              aria-current={currentPage === number ? 'page' : undefined}
+            >
+              {number}
+            </button>
+          );
+        })}
       </div>
       
       <button
-        onClick={() => paginate(currentPage + 1)}
+        onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
         className={`px-2 sm:px-3 py-2 rounded-md flex-shrink-0 ${
           darkMode

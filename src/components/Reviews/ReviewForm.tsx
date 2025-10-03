@@ -22,12 +22,13 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
   darkMode,
   loading = false,
 }) => {
-  const [rating, setRating] = useState(8);
   const [clarity, setClarity] = useState(8);
   const [fairness, setFairness] = useState(8);
   const [punctuality, setPunctuality] = useState(8);
   const [wouldTakeAgain, setWouldTakeAgain] = useState(8);
   const [comment, setComment] = useState('');
+
+  const rating = (clarity + fairness + punctuality + wouldTakeAgain) / 4;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,12 +63,10 @@ const ReviewForm: React.FC<ReviewFormProps> = ({
               <span className={`text-3xl md:text-4xl font-bold ${
                 darkMode ? 'text-white' : 'text-gray-900'
               }`}>
-                {rating / 2}/5
+                {rating.toFixed(1)}/10
               </span>
               <RatingStars
                 rating={rating}
-                onChange={setRating}
-                interactive
                 size="lg"
                 darkMode={darkMode}
               />

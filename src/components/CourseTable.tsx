@@ -48,13 +48,16 @@ const CourseTable: React.FC<CourseTableProps> = ({ courses, sections, onRateSect
           const reviews = querySnapshot.docs.map(doc => doc.data());
           
           if (reviews.length > 0) {
-            const totals = reviews.reduce((acc, review: any) => ({
-              rating: acc.rating + review.rating,
-              clarity: acc.clarity + (review.clarity || 0),
-              fairness: acc.fairness + (review.fairness || 0),
-              punctuality: acc.punctuality + (review.punctuality || 0),
-              wouldTakeAgain: acc.wouldTakeAgain + (review.wouldTakeAgain || 0)
-            }), {
+            const totals = reviews.reduce((acc, review: any) => {
+              const calculatedRating = (review.clarity + review.fairness + review.punctuality + review.wouldTakeAgain) / 4;
+              return {
+                rating: acc.rating + calculatedRating,
+                clarity: acc.clarity + (review.clarity || 0),
+                fairness: acc.fairness + (review.fairness || 0),
+                punctuality: acc.punctuality + (review.punctuality || 0),
+                wouldTakeAgain: acc.wouldTakeAgain + (review.wouldTakeAgain || 0)
+              };
+            }, {
               rating: 0,
               clarity: 0,
               fairness: 0,

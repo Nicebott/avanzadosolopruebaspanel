@@ -14,6 +14,7 @@ import { fetchCourseData } from './api/courseData';
 import { normalizeText } from './utils/stringUtils';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
+import { getCurrentUserAdminStatus } from './services/adminService';
 import { Toaster } from 'react-hot-toast';
 import { GraduationCap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,7 +36,17 @@ const ALL_CAMPUSES = [
   'Neyba',
   'Cotuí',
   'Nagua',
-  'Dajabón'
+  'Dajabón',
+  'Finca Exp Engombe',
+  'Moca',
+  'Jarabacoa',
+  'San Cristóbal',
+  'San Pedro de Macorís',
+  'Montecristi',
+  'Samaná',
+  'Elías Piña',
+  'Hermanas Mirabal',
+  'Yamasá'
 ];
 
 function App() {
@@ -58,10 +69,18 @@ function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState(auth.currentUser);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      if (user) {
+        const adminStatus = await getCurrentUserAdminStatus();
+        setIsAdmin(adminStatus);
+      } else {
+        setIsAdmin(false);
+        setShowAdmin(false);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -220,6 +239,7 @@ function App() {
         handleForumClick={handleForumClick}
         showAdmin={showAdmin}
         handleAdminClick={handleAdminClick}
+        isAdmin={isAdmin}
       />
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow">
@@ -328,7 +348,7 @@ function App() {
             </motion.div>
           )}
 
-          {showAdmin && (
+          {showAdmin && isAdmin && (
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}

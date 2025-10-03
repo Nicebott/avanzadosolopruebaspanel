@@ -49,6 +49,15 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       >
         <div className="flex items-center gap-1 md:gap-2 mb-1 flex-wrap">
           <div className="flex items-center gap-1">
+            <span className={`font-medium text-xs md:text-sm ${
+              isCurrentUser
+                ? 'text-white'
+                : darkMode
+                  ? 'text-gray-300'
+                  : 'text-gray-700'
+            }`}>
+              {message.username}
+            </span>
             {message.isAdmin ? (
               <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] md:text-xs font-bold ${
                 darkMode
@@ -59,14 +68,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
                 ADMIN
               </span>
             ) : (
-              <span className={`font-medium text-xs md:text-sm ${
-                isCurrentUser
-                  ? 'text-white'
-                  : darkMode
-                    ? 'text-gray-300'
-                    : 'text-gray-700'
+              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] md:text-xs font-medium ${
+                darkMode
+                  ? 'bg-blue-600 text-blue-100'
+                  : 'bg-blue-100 text-blue-700'
               }`}>
-                {message.username}
+                Estudiante
               </span>
             )}
           </div>

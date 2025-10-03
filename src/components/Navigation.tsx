@@ -21,6 +21,7 @@ interface NavigationProps {
   handleForumClick: () => void;
   showAdmin: boolean;
   handleAdminClick: () => void;
+  isAdmin: boolean;
 }
 
 const Navigation: React.FC<NavigationProps> = ({
@@ -41,6 +42,7 @@ const Navigation: React.FC<NavigationProps> = ({
   handleForumClick,
   showAdmin,
   handleAdminClick,
+  isAdmin,
 }) => {
   return (
     <header className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-md sticky top-0 z-50`}>
@@ -163,14 +165,16 @@ const Navigation: React.FC<NavigationProps> = ({
               <HelpCircle size={16} className="mr-1.5" />
               FAQ
             </NavButton>
-            <NavButton
-              onClick={handleAdminClick}
-              isActive={showAdmin}
-              darkMode={darkMode}
-            >
-              <Shield size={16} className="mr-1.5" />
-              Admin
-            </NavButton>
+            {isAdmin && (
+              <NavButton
+                onClick={handleAdminClick}
+                isActive={showAdmin}
+                darkMode={darkMode}
+              >
+                <Shield size={16} className="mr-1.5" />
+                Admin
+              </NavButton>
+            )}
           </div>
         </nav>
       </div>

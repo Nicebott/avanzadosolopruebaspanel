@@ -61,13 +61,16 @@ const ProfessorDetailsModal: React.FC<ProfessorDetailsModalProps> = ({
       setReviews(reviewsData);
       
       if (reviewsData.length > 0) {
-        const totals = reviewsData.reduce((acc, review) => ({
-          rating: acc.rating + review.rating,
-          clarity: acc.clarity + (review.clarity || 0),
-          fairness: acc.fairness + (review.fairness || 0),
-          punctuality: acc.punctuality + (review.punctuality || 0),
-          wouldTakeAgain: acc.wouldTakeAgain + (review.wouldTakeAgain || 0)
-        }), {
+        const totals = reviewsData.reduce((acc, review) => {
+          const calculatedRating = (review.clarity + review.fairness + review.punctuality + review.wouldTakeAgain) / 4;
+          return {
+            rating: acc.rating + calculatedRating,
+            clarity: acc.clarity + (review.clarity || 0),
+            fairness: acc.fairness + (review.fairness || 0),
+            punctuality: acc.punctuality + (review.punctuality || 0),
+            wouldTakeAgain: acc.wouldTakeAgain + (review.wouldTakeAgain || 0)
+          };
+        }, {
           rating: 0,
           clarity: 0,
           fairness: 0,

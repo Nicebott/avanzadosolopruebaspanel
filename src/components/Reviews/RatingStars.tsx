@@ -26,12 +26,16 @@ const RatingStars: React.FC<RatingStarsProps> = ({
   };
 
   const starSize = starSizes[size];
+  const totalStars = 5;
+  const normalizedRating = (rating / maxRating) * totalStars;
 
   return (
     <div className="flex">
-      {[...Array(maxRating / 2)].map((_, index) => {
-        const starValue = (index + 1) * 2;
-        const isFilled = starValue <= rating;
+      {[...Array(totalStars)].map((_, index) => {
+        const starNumber = index + 1;
+        const fillPercentage = Math.min(Math.max(normalizedRating - index, 0), 1);
+        const isFilled = fillPercentage >= 0.5;
+        const starValue = interactive ? Math.ceil(((starNumber / totalStars) * maxRating)) : 0;
 
         return (
           <motion.div

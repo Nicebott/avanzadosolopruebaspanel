@@ -10,6 +10,7 @@ import Navigation from './components/Navigation';
 import FAQ from './components/FAQ';
 import Forum from './components/Forum/Forum';
 import AdminPanel from './components/AdminPanel';
+import NotificationToastContainer from './components/NotificationToastContainer';
 import { Course, Section } from './types';
 import { fetchCourseData } from './api/courseData';
 import { normalizeText } from './utils/stringUtils';
@@ -220,6 +221,7 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
   return (
     <div className={`min-h-screen flex flex-col ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       <Toaster position="top-center" />
+      <NotificationToastContainer />
       
       <Navigation
         isMenuOpen={isMenuOpen}

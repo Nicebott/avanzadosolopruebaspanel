@@ -1,6 +1,7 @@
 import React from 'react';
 import { GraduationCap, Menu, X, Moon, Sun, LogIn, CircleUser as UserCircle, HelpCircle, MessageSquare, Shield } from 'lucide-react';
 import ProfileDropdown from './ProfileDropdown';
+import NotificationBell from './NotificationBell';
 import { User } from 'firebase/auth';
 
 interface NavigationProps {
@@ -63,6 +64,8 @@ const Navigation: React.FC<NavigationProps> = ({
         </button>
 
         <div className="flex items-center gap-2 md:gap-4">
+          {user && <NotificationBell darkMode={darkMode} />}
+
           {!user ? (
             <button
               onClick={() => setIsAuthModalOpen(true)}
@@ -89,8 +92,8 @@ const Navigation: React.FC<NavigationProps> = ({
                 <span className="hidden sm:inline">{user.displayName || 'Usuario'}</span>
               </button>
               {showProfileDropdown && (
-                <ProfileDropdown 
-                  darkMode={darkMode} 
+                <ProfileDropdown
+                  darkMode={darkMode}
                   onClose={() => setShowProfileDropdown(false)}
                 />
               )}

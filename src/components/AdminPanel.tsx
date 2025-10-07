@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, UserPlus, Users, Trash2, AlertTriangle, Copy, Check } from 'lucide-react';
+import { Shield, UserPlus, Users, Trash2, AlertTriangle, Copy, Check, Bell } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getCurrentUserAdminStatus, getCurrentUserSuperAdminStatus, addAdmin, getAllAdmins, removeAdmin } from '../services/adminService';
+import { getAllNotifications } from '../services/notificationService';
 import { auth } from '../firebase';
 import toast from 'react-hot-toast';
+import NotificationPanel from './NotificationPanel';
+import { Notification } from '../types/notification';
 
 interface AdminPanelProps {
   darkMode: boolean;
@@ -16,6 +19,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ darkMode }) => {
   const [newAdminEmail, setNewAdminEmail] = useState('');
   const [adminUsers, setAdminUsers] = useState<any[]>([]);
   const [copiedUid, setCopiedUid] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'users' | 'notifications'>('users');
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   useEffect(() => {
     checkAdminStatus();
@@ -37,6 +42,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ darkMode }) => {
     const admins = await getAllAdmins();
     setAdminUsers(admins);
   };
+
+  const loadNotifications = async () => {
+    const notifs = await getAllNotifications();
+    setNotifications(notifs);
+  };
+
+  useEffect(() => {
+    if (isAdmin) {
+      loadNotifications();
+    }
+  }, [isAdmin]);
 
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,7 +131,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ darkMode }) => {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4">
+    <div className="w-full max-w-6xl mx-auto px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -135,9 +151,42 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ darkMode }) => {
           )}
         </div>
         <p className={`text-sm md:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-          Gestiona usuarios administradores y modera el contenido de la plataforma
+          Gestiona usuarios administradores, envía notificaciones y modera el contenido
         </p>
       </motion.div>
+
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setActiveTab('users')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'users'
+              ? darkMode
+                ? 'bg-blue-600 text-white'
+                : 'bg-blue-600 text-white'
+              : darkMode
+              ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          <Users className="w-5 h-5" />
+          Administradores
+        </button>
+        <button
+          onClick={() => setActiveTab('notifications')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'notifications'
+              ? darkMode
+                ? 'bg-blue-600 text-white'
+                : 'bg-blue-600 text-white'
+              : darkMode
+              ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          <Bell className="w-5 h-5" />
+          Notificaciones
+        </button>
+      </div>
 
       {/* Información del usuario actual */}
       <motion.div
@@ -186,7 +235,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ darkMode }) => {
         </div>
       </motion.div>
 
-      {isSuperAdmin && (
+      {activeTab === 'notifications' && (
+        <NotificationPanel
+          darkMode={darkMode}
+          notifications={notifications}
+          onRefresh={loadNotifications}
+        />
+      )}
+
+      {activeTab === 'users' && isSuperAdmin && (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Agregar Administrador */}
         <motion.div
@@ -309,6 +366,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ darkMode }) => {
       </div>
       )}
 
+      {activeTab === 'users' && (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -340,6 +398,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ darkMode }) => {
           </div>
         </div>
       </motion.div>
+      )}
     </div>
   );
 };

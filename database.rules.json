@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "notifications": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$notificationId": {
+        ".validate": "newData.hasChildren(['title', 'message', 'type', 'createdAt', 'createdBy', 'createdByEmail'])"
+      }
+    },
+    "userNotificationStatus": {
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": "auth != null && auth.uid === $userId"
+      }
+    }
+  }
+}

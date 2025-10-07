@@ -67,11 +67,19 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ notification, onC
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, x: 400, scale: 0.8 }}
-          animate={{ opacity: 1, x: 0, scale: 1 }}
+          initial={{ opacity: 0, x: 400, y: -20 }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, x: 400, scale: 0.8 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-          className={`${config.bg} ${config.text} rounded-lg shadow-2xl border-2 ${config.border} p-4 w-80 sm:w-96 overflow-hidden relative`}
+          transition={{
+            type: 'spring',
+            stiffness: 260,
+            damping: 20,
+            duration: 0.4
+          }}
+          className={`${config.bg} ${config.text} rounded-xl shadow-2xl border-2 ${config.border} p-4 w-80 sm:w-96 overflow-hidden relative backdrop-blur-sm`}
+          style={{
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
+          }}
         >
           <button
             onClick={() => {
@@ -84,9 +92,14 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ notification, onC
           </button>
 
           <div className="flex items-start gap-3 pr-6">
-            <div className="flex-shrink-0 mt-0.5">
+            <motion.div
+              className="flex-shrink-0 mt-0.5"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
+            >
               <Icon className="w-6 h-6" />
-            </div>
+            </motion.div>
             <div className="flex-1 min-w-0">
               <h4 className="font-bold text-base mb-1">
                 {notification.title}

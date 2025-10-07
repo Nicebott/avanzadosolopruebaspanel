@@ -157,37 +157,53 @@ export const subscribeToNotifications = (callback: (notifications: Notification[
   const notificationsRef = ref(db, 'notifications');
   const userReadStatusRef = ref(db, `userNotificationStatus/${user.uid}`);
 
-  const handleNotifications = async () => {
-    const notificationsSnapshot = await get(notificationsRef);
-    const readStatusSnapshot = await get(userReadStatusRef);
+  let notificationsData: { [key: string]: any } = {};
+  let readStatusData: { [key: string]: boolean } = {};
 
-    const readStatus: { [key: string]: boolean } = {};
-    if (readStatusSnapshot.exists()) {
-      readStatusSnapshot.forEach((child) => {
-        readStatus[child.key!] = child.val().read;
-      });
-    }
-
+  const processNotifications = () => {
     const notifications: Notification[] = [];
-    if (notificationsSnapshot.exists()) {
-      notificationsSnapshot.forEach((child) => {
-        notifications.push({
-          id: child.key!,
-          ...child.val(),
-          read: readStatus[child.key!] || false
-        });
+
+    Object.keys(notificationsData).forEach((key) => {
+      notifications.push({
+        id: key,
+        ...notificationsData[key],
+        read: readStatusData[key] || false
       });
-    }
+    });
 
     callback(notifications.sort((a, b) => b.createdAt - a.createdAt));
   };
 
-  onValue(notificationsRef, handleNotifications);
-  onValue(userReadStatusRef, handleNotifications);
+  const notificationsListener = onValue(notificationsRef, (snapshot) => {
+    console.log('[NotificationService] Notificaciones actualizadas en Firebase');
+    if (snapshot.exists()) {
+      notificationsData = {};
+      snapshot.forEach((child) => {
+        notificationsData[child.key!] = child.val();
+      });
+      console.log('[NotificationService] Total de notificaciones:', Object.keys(notificationsData).length);
+    } else {
+      notificationsData = {};
+      console.log('[NotificationService] No hay notificaciones en Firebase');
+    }
+    processNotifications();
+  });
+
+  const readStatusListener = onValue(userReadStatusRef, (snapshot) => {
+    if (snapshot.exists()) {
+      readStatusData = {};
+      snapshot.forEach((child) => {
+        readStatusData[child.key!] = child.val().read;
+      });
+    } else {
+      readStatusData = {};
+    }
+    processNotifications();
+  });
 
   return () => {
-    off(notificationsRef);
-    off(userReadStatusRef);
+    off(notificationsRef, 'value', notificationsListener);
+    off(userReadStatusRef, 'value', readStatusListener);
   };
 };
 

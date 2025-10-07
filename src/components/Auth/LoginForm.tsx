@@ -25,7 +25,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ darkMode, onClose }) => {
       toast.success('¡Inicio de sesión exitoso!');
       onClose();
     } catch (error: any) {
-      toast.error('Error al iniciar sesión: ' + error.message);
+      toast.error('Error al iniciar sesión: correo o contraseña incorrecta');
     } finally {
       setLoading(false);
     }

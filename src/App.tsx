@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import SearchBar from './components/SearchBar';
 import CourseTable from './components/CourseTable';
 import Pagination from './components/Pagination';
@@ -49,7 +50,12 @@ const ALL_CAMPUSES = [
   'Yamasá'
 ];
 
-function App() {
+interface AppProps {
+  darkMode: boolean;
+  setDarkMode: (value: boolean) => void;
+}
+
+function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [allSections, setAllSections] = useState<Section[]>([]);
@@ -62,14 +68,13 @@ function App() {
   const [showFAQ, setShowFAQ] = useState(false);
   const [showForum, setShowForum] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
-    const savedMode = localStorage.getItem('darkMode');
-    return savedMode ? JSON.parse(savedMode) : false;
-  });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState(auth.currentUser);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const darkMode = darkModeProp;
+  const setDarkMode = setDarkModeProp;
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -86,11 +91,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
   }, [darkMode]);
 
@@ -372,22 +372,22 @@ function App() {
               </p>
             </div>
             <div className="flex gap-4">
-              <a
-                href="#"
+              <Link
+                to="/terminos"
                 className={`text-sm ${
                   darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'
                 } transition-colors`}
               >
                 Términos y Condiciones
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                to="/privacidad"
                 className={`text-sm ${
                   darkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600 hover:text-gray-900'
                 } transition-colors`}
               >
                 Política de Privacidad
-              </a>
+              </Link>
             </div>
           </div>
         </div>

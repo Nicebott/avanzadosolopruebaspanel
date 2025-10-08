@@ -23,6 +23,7 @@ interface NavigationProps {
   showAdmin: boolean;
   handleAdminClick: () => void;
   isAdmin: boolean;
+  onProfileClick: () => void;
 }
 
 const Navigation: React.FC<NavigationProps> = ({
@@ -44,6 +45,7 @@ const Navigation: React.FC<NavigationProps> = ({
   showAdmin,
   handleAdminClick,
   isAdmin,
+  onProfileClick,
 }) => {
   return (
     <header className={`${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-md sticky top-0 z-50`}>
@@ -95,6 +97,7 @@ const Navigation: React.FC<NavigationProps> = ({
                 <ProfileDropdown
                   darkMode={darkMode}
                   onClose={() => setShowProfileDropdown(false)}
+                  onProfileClick={onProfileClick}
                 />
               )}
             </div>

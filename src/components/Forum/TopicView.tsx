@@ -8,6 +8,7 @@ import { auth } from '../../firebase';
 import { deleteTopic, deleteMessage } from '../../services/forumService';
 import { getCurrentUserAdminStatus } from '../../services/adminService';
 import toast from 'react-hot-toast';
+import { getInitials, getAvatarColor } from '../../utils/avatarUtils';
 
 interface TopicViewProps {
   topic: Topic;
@@ -139,7 +140,11 @@ const TopicView: React.FC<TopicViewProps> = ({
           <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full ${
             darkMode ? 'bg-gray-700' : 'bg-gray-100'
           }`}>
-            <User className="w-3 h-3 sm:w-4 sm:h-4" />
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold ${
+              getAvatarColor(topic.creadorNombre)
+            }`}>
+              {getInitials(topic.creadorNombre)}
+            </div>
             <span className="font-medium">{topic.creadorNombre}</span>
           </div>
           <span className="hidden sm:inline">·</span>
@@ -172,10 +177,10 @@ const TopicView: React.FC<TopicViewProps> = ({
                     } rounded-lg p-3 sm:p-4`}
                   >
                     <div className="flex items-start gap-2 sm:gap-4 group">
-                      <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
-                        darkMode ? 'bg-gray-600' : 'bg-gray-200'
+                      <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md ${
+                        getAvatarColor(message.autorNombre)
                       }`}>
-                        <User className={`w-4 h-4 sm:w-5 sm:h-5 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`} />
+                        {getInitials(message.autorNombre)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start sm:items-center justify-between mb-1 gap-2">

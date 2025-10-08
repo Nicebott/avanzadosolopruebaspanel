@@ -46,6 +46,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         ...review,
         timestamp: new Date().toISOString()
       });
+
       toast.success('¡Reseña enviada exitosamente!');
       onClose();
     } catch (error) {

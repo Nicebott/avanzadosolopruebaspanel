@@ -66,7 +66,6 @@ export const createMessage = async (topicId: string, content: string, userId: st
     const messagesRef = collection(firestore, `foros/${topicId}/mensajes`);
     const topicRef = doc(firestore, `foros/${topicId}`);
 
-    // Add the message first
     const messageRef = await addDoc(messagesRef, {
       contenido: content,
       autor: userId,
@@ -74,7 +73,6 @@ export const createMessage = async (topicId: string, content: string, userId: st
       creadoEn: Timestamp.now()
     });
 
-    // Then update the topic's message count
     await updateDoc(topicRef, {
       mensajesCount: increment(1)
     });
@@ -119,17 +117,14 @@ export const deleteTopic = async (topicId: string): Promise<{ success: boolean; 
       };
     }
 
-    // Get all messages and delete them
     const messagesRef = collection(firestore, `foros/${topicId}/mensajes`);
     const messagesSnapshot = await getDocs(messagesRef);
-    
-    // Delete each message
-    const deletePromises = messagesSnapshot.docs.map(messageDoc => 
+
+    const deletePromises = messagesSnapshot.docs.map(messageDoc =>
       deleteDoc(messageDoc.ref)
     );
     await Promise.all(deletePromises);
-    
-    // Delete the topic document
+
     await deleteDoc(topicRef);
 
     return { success: true };
@@ -166,18 +161,16 @@ export const deleteMessage = async (topicId: string, messageId: string): Promise
     const messageData = messageSnap.data();
     const isAdmin = await checkIsAdmin(currentUser.uid);
     const isOwner = messageData.autor === currentUser.uid;
-    
+
     if (!isOwner && !isAdmin) {
-      return { 
-        success: false, 
-        error: 'No tienes permiso para eliminar este mensaje' 
+      return {
+        success: false,
+        error: 'No tienes permiso para eliminar este mensaje'
       };
     }
 
-    // Delete the message
     await deleteDoc(messageRef);
 
-    // Update the topic's message count
     const topicRef = doc(firestore, `foros/${topicId}`);
     await updateDoc(topicRef, {
       mensajesCount: increment(-1)

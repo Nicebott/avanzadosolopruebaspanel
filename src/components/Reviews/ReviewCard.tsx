@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import RatingStars from './RatingStars';
 import { getCurrentUserAdminStatus, getCurrentUserSuperAdminStatus, deleteReview } from '../../services/adminService';
 import toast from 'react-hot-toast';
+import { getInitials, getAvatarColor } from '../../utils/avatarUtils';
 
 interface ReviewCardProps {
   review: {
@@ -66,12 +67,10 @@ const ReviewCard: React.FC<ReviewCardProps> = ({ review, darkMode, onDelete }) =
       } shadow-lg transition-colors duration-200`}
     >
       <div className="flex items-start gap-4">
-        <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${
-          darkMode ? 'bg-gray-700' : 'bg-gray-100'
+        <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md ${
+          getAvatarColor(review.userName)
         }`}>
-          <User className={`w-6 h-6 ${
-            darkMode ? 'text-gray-300' : 'text-gray-600'
-          }`} />
+          {getInitials(review.userName)}
         </div>
         
         <div className="flex-1 min-w-0">

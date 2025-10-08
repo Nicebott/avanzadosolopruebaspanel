@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { getCurrentUserAdminStatus } from '../../services/adminService';
 import { auth } from '../../firebase';
 import { useState, useEffect } from 'react';
+import { getInitials, getAvatarColor } from '../../utils/avatarUtils';
 
 interface ForumListProps {
   topics: Topic[];
@@ -82,7 +83,11 @@ const ForumList: React.FC<ForumListProps> = ({ topics, onTopicClick, onNewTopic,
                   <div className={`flex items-center gap-2 ${
                     darkMode ? 'text-gray-400' : 'text-gray-500'
                   }`}>
-                    <Users className="w-4 h-4" />
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm ${
+                      getAvatarColor(topic.creadorNombre)
+                    }`}>
+                      {getInitials(topic.creadorNombre)}
+                    </div>
                     <span className="font-medium">{topic.creadorNombre}</span>
                   </div>
                   <div className={`flex items-center gap-2 ${

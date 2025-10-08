@@ -11,6 +11,7 @@ import FAQ from './components/FAQ';
 import Forum from './components/Forum/Forum';
 import AdminPanel from './components/AdminPanel';
 import NotificationToastContainer from './components/NotificationToastContainer';
+import UserProfile from './components/UserProfile';
 import { Course, Section } from './types';
 import { fetchCourseData } from './api/courseData';
 import { normalizeText } from './utils/stringUtils';
@@ -69,6 +70,7 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
   const [showFAQ, setShowFAQ] = useState(false);
   const [showForum, setShowForum] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState(auth.currentUser);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -117,6 +119,7 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
     setCurrentPage(1);
     setShowFAQ(false);
     setShowForum(false);
+    setShowProfile(false);
   }, []);
 
   const filteredSections = useMemo(() => {
@@ -181,6 +184,7 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
     setShowFAQ(false);
     setShowForum(false);
     setShowAdmin(false);
+    setShowProfile(false);
   };
 
   const scrollToTop = useCallback(() => {
@@ -193,12 +197,14 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
     setShowFAQ(false);
     setShowForum(false);
     setShowAdmin(false);
+    setShowProfile(false);
   }, []);
 
   const handleFAQClick = () => {
     setShowFAQ(true);
     setShowForum(false);
     setShowAdmin(false);
+    setShowProfile(false);
     setIsMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -207,6 +213,7 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
     setShowForum(true);
     setShowFAQ(false);
     setShowAdmin(false);
+    setShowProfile(false);
     setIsMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -215,6 +222,16 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
     setShowAdmin(true);
     setShowFAQ(false);
     setShowForum(false);
+    setShowProfile(false);
+    setIsMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleProfileClick = () => {
+    setShowProfile(true);
+    setShowFAQ(false);
+    setShowForum(false);
+    setShowAdmin(false);
     setIsMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -242,11 +259,12 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
         showAdmin={showAdmin}
         handleAdminClick={handleAdminClick}
         isAdmin={isAdmin}
+        onProfileClick={handleProfileClick}
       />
       
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow">
         <AnimatePresence mode="wait">
-          {!showFAQ && !showForum && !showAdmin && (
+          {!showFAQ && !showForum && !showAdmin && !showProfile && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -357,6 +375,16 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
               exit={{ opacity: 0, x: -20 }}
             >
               <AdminPanel darkMode={darkMode} />
+            </motion.div>
+          )}
+
+          {showProfile && user && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <UserProfile darkMode={darkMode} />
             </motion.div>
           )}
         </AnimatePresence>

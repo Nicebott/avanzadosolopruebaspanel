@@ -34,6 +34,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ darkMode, onClose }) => {
       await updateProfile(userCredential.user, {
         displayName: name
       });
+
       toast.success('¡Cuenta creada exitosamente!');
       onClose();
     } catch (error: any) {

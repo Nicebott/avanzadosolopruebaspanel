@@ -54,13 +54,18 @@ service cloud.firestore {
       allow read: if true;
 
       // Solo usuarios autenticados pueden crear reseñas
-      allow create: if request.auth != null 
+      allow create: if request.auth != null
         && request.resource.data.userId == request.auth.uid;
 
-      // Solo el autor o un admin pueden modificar o eliminar reseñas
-      allow update, delete: if request.auth != null 
-        && (resource.data.userId == request.auth.uid || 
-            exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+      // Solo el autor puede modificar su propia reseña
+      allow update: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+
+      // Solo el autor, un admin o un superadmin pueden eliminar reseñas
+      allow delete: if request.auth != null
+        && (resource.data.userId == request.auth.uid ||
+            exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+            exists(/databases/$(database)/documents/superadmins/$(request.auth.uid)));
     }
 
     // Reglas para los foros

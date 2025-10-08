@@ -59,7 +59,7 @@ const Navigation: React.FC<NavigationProps> = ({
           <h1 className={`text-lg sm:text-xl md:text-2xl font-bold ${
             darkMode ? 'text-white' : 'text-gray-800'
           } group-hover:text-blue-500 transition-colors duration-200`}>
-            UASD 2025-10
+            MiSemestre
           </h1>
         </button>
 

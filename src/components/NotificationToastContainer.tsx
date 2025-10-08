@@ -10,6 +10,7 @@ const NotificationToastContainer: React.FC = () => {
   const [visibleNotifications, setVisibleNotifications] = useState<Notification[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const seenNotificationsRef = useRef<Set<string>>(new Set());
+  const initialLoadRef = useRef<boolean>(true);
 
   // Escuchar cambios de autenticación
   useEffect(() => {
@@ -24,6 +25,7 @@ const NotificationToastContainer: React.FC = () => {
         setCurrentUserId(null);
         setVisibleNotifications([]);
         seenNotificationsRef.current.clear();
+        initialLoadRef.current = true;
       }
     });
 
@@ -46,6 +48,13 @@ const NotificationToastContainer: React.FC = () => {
       console.log('[Toast] Notificaciones recibidas:', notifs.length);
 
       if (notifs.length === 0) return;
+
+      if (initialLoadRef.current) {
+        console.log('[Toast] Primera carga, marcando todas las notificaciones como vistas');
+        notifs.forEach(notif => seenNotificationsRef.current.add(notif.id));
+        initialLoadRef.current = false;
+        return;
+      }
 
       const latestNotification = notifs[0];
       console.log('[Toast] Última notificación:', latestNotification);

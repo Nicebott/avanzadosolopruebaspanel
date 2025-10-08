@@ -87,14 +87,14 @@ const NotificationToastContainer: React.FC = () => {
   console.log('[Toast] Renderizando contenedor con', visibleNotifications.length, 'notificaciones');
 
   return (
-    <div 
-      className="fixed top-20 right-4 z-[9999] flex flex-col gap-3"
+    <div
+      className="fixed top-16 sm:top-20 right-2 sm:right-4 left-2 sm:left-auto z-[9999] flex flex-col gap-2 sm:gap-3"
       style={{ pointerEvents: 'none' }}
     >
       <AnimatePresence>
         {visibleNotifications.map((notification) => (
-          <div 
-            key={notification.id} 
+          <div
+            key={notification.id}
             style={{ pointerEvents: 'auto' }}
           >
             <NotificationToast

@@ -86,41 +86,41 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className="mb-6 sm:mb-8"
       >
-        <div className="flex items-center gap-3 mb-4">
-          <Bell className={`w-8 h-8 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
-          <h2 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <Bell className={`w-6 sm:w-8 h-6 sm:h-8 ${darkMode ? 'text-blue-400' : 'text-blue-500'}`} />
+          <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
             Sistema de Notificaciones
           </h2>
         </div>
-        <p className={`text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+        <p className={`text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
           Envía notificaciones a todos los usuarios de la plataforma
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`p-6 rounded-xl ${
+          className={`p-4 sm:p-6 rounded-xl ${
             darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
           } shadow-lg`}
         >
-          <h3 className={`text-xl font-semibold mb-4 flex items-center gap-2 ${
+          <h3 className={`text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2 ${
             darkMode ? 'text-white' : 'text-gray-900'
           }`}>
-            <Send className="w-5 h-5" />
-            Crear Nueva Notificación
+            <Send className="w-4 sm:w-5 h-4 sm:h-5" />
+            <span className="truncate">Crear Nueva Notificación</span>
           </h3>
 
           <form onSubmit={handleSendNotification} className="space-y-4">
             <div>
-              <label className={`block text-sm font-medium mb-2 ${
+              <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 Título
@@ -129,7 +129,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className={`w-full px-4 py-2.5 rounded-lg ${
+                className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg ${
                   darkMode
                     ? 'bg-gray-700 text-white border-gray-600'
                     : 'bg-white text-gray-900 border-gray-300'
@@ -140,7 +140,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
             </div>
 
             <div>
-              <label className={`block text-sm font-medium mb-2 ${
+              <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 Mensaje
@@ -148,8 +148,8 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                rows={4}
-                className={`w-full px-4 py-2.5 rounded-lg ${
+                rows={3}
+                className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg ${
                   darkMode
                     ? 'bg-gray-700 text-white border-gray-600'
                     : 'bg-white text-gray-900 border-gray-300'
@@ -160,12 +160,12 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
             </div>
 
             <div>
-              <label className={`block text-sm font-medium mb-2 ${
+              <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${
                 darkMode ? 'text-gray-300' : 'text-gray-700'
               }`}>
                 Tipo de Notificación
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                 {[
                   { value: 'info', label: 'Información', icon: Info, color: 'blue' },
                   { value: 'warning', label: 'Advertencia', icon: AlertTriangle, color: 'yellow' },
@@ -178,7 +178,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
                       key={option.value}
                       type="button"
                       onClick={() => setType(option.value as any)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border-2 transition-all ${
+                      className={`flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border-2 transition-all ${
                         type === option.value
                           ? `border-${option.color}-500 bg-${option.color}-500/10`
                           : darkMode
@@ -186,8 +186,8 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
                           : 'border-gray-300 bg-white hover:bg-gray-50'
                       }`}
                     >
-                      <Icon className={`w-4 h-4 text-${option.color}-500`} />
-                      <span className={`text-sm font-medium ${
+                      <Icon className={`w-3.5 sm:w-4 h-3.5 sm:h-4 text-${option.color}-500 flex-shrink-0`} />
+                      <span className={`text-xs sm:text-sm font-medium truncate ${
                         darkMode ? 'text-white' : 'text-gray-900'
                       }`}>
                         {option.label}
@@ -201,7 +201,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
             <button
               type="submit"
               disabled={sending}
-              className={`w-full px-4 py-3 rounded-lg font-medium transition-colors ${
+              className={`w-full px-4 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-colors ${
                 sending
                   ? 'bg-gray-500 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700'
@@ -209,13 +209,13 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
             >
               {sending ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Enviando...
+                  <div className="animate-spin rounded-full h-4 sm:h-5 w-4 sm:w-5 border-b-2 border-white"></div>
+                  <span className="truncate">Enviando...</span>
                 </>
               ) : (
                 <>
-                  <Send className="w-5 h-5" />
-                  Enviar Notificación
+                  <Send className="w-4 sm:w-5 h-4 sm:h-5" />
+                  <span className="truncate">Enviar Notificación</span>
                 </>
               )}
             </button>
@@ -225,45 +225,46 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className={`p-6 rounded-xl ${
+          className={`p-4 sm:p-6 rounded-xl ${
             darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
           } shadow-lg`}
         >
-          <h3 className={`text-xl font-semibold mb-4 ${
+          <h3 className={`text-lg sm:text-xl font-semibold mb-3 sm:mb-4 ${
             darkMode ? 'text-white' : 'text-gray-900'
           }`}>
-            Historial de Notificaciones ({notifications.length})
+            <span className="hidden sm:inline">Historial de Notificaciones</span>
+            <span className="sm:hidden">Historial</span> ({notifications.length})
           </h3>
 
-          <div className="space-y-3 max-h-[500px] overflow-y-auto">
+          <div className="space-y-2 sm:space-y-3 max-h-[400px] sm:max-h-[500px] overflow-y-auto">
             {notifications.length === 0 ? (
-              <p className={`text-center py-8 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              <p className={`text-center py-6 sm:py-8 text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 No hay notificaciones enviadas
               </p>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 rounded-lg border ${getTypeColor(notification.type)}`}
+                  className={`p-3 sm:p-4 rounded-lg border ${getTypeColor(notification.type)}`}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3 flex-1">
+                  <div className="flex items-start justify-between gap-2 sm:gap-3">
+                    <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
                       {getTypeIcon(notification.type)}
                       <div className="flex-1 min-w-0">
-                        <h4 className={`font-semibold text-sm mb-1 ${
+                        <h4 className={`font-semibold text-xs sm:text-sm mb-0.5 sm:mb-1 leading-tight ${
                           darkMode ? 'text-white' : 'text-gray-900'
                         }`}>
                           {notification.title}
                         </h4>
-                        <p className={`text-sm mb-2 ${
+                        <p className={`text-xs sm:text-sm mb-1.5 sm:mb-2 leading-snug ${
                           darkMode ? 'text-gray-300' : 'text-gray-700'
                         }`}>
                           {notification.message}
                         </p>
-                        <div className={`flex items-center gap-2 text-xs ${
+                        <div className={`flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2 text-[10px] sm:text-xs ${
                           darkMode ? 'text-gray-400' : 'text-gray-500'
                         }`}>
-                          <span>
+                          <span className="truncate">
                             {new Date(notification.createdAt).toLocaleString('es-DO', {
                               day: '2-digit',
                               month: '2-digit',
@@ -274,8 +275,8 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
                           </span>
                           {notification.createdByEmail && (
                             <>
-                              <span>•</span>
-                              <span>Por: {notification.createdByEmail}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="truncate">Por: {notification.createdByEmail}</span>
                             </>
                           )}
                         </div>
@@ -283,14 +284,14 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ darkMode, notific
                     </div>
                     <button
                       onClick={() => handleDeleteNotification(notification.id)}
-                      className={`p-2 rounded-lg flex-shrink-0 ${
+                      className={`p-1.5 sm:p-2 rounded-lg flex-shrink-0 ${
                         darkMode
                           ? 'text-red-400 hover:bg-red-900/30'
                           : 'text-red-500 hover:bg-red-50'
                       } transition-colors`}
                       title="Eliminar notificación"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                     </button>
                   </div>
                 </div>

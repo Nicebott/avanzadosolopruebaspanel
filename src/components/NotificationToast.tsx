@@ -76,7 +76,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ notification, onC
             damping: 20,
             duration: 0.4
           }}
-          className={`${config.bg} ${config.text} rounded-xl shadow-2xl border-2 ${config.border} p-4 w-80 sm:w-96 overflow-hidden relative backdrop-blur-sm`}
+          className={`${config.bg} ${config.text} rounded-xl shadow-2xl border-2 ${config.border} p-3 sm:p-4 w-[calc(100vw-2rem)] sm:w-96 max-w-md overflow-hidden relative backdrop-blur-sm`}
           style={{
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
           }}
@@ -86,25 +86,25 @@ const NotificationToast: React.FC<NotificationToastProps> = ({ notification, onC
               setIsVisible(false);
               setTimeout(onClose, 300);
             }}
-            className="absolute top-2 right-2 p-1 rounded-full hover:bg-white/20 transition-colors"
+            className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 p-1 rounded-full hover:bg-white/20 transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
           </button>
 
-          <div className="flex items-start gap-3 pr-6">
+          <div className="flex items-start gap-2 sm:gap-3 pr-5 sm:pr-6">
             <motion.div
               className="flex-shrink-0 mt-0.5"
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
             >
-              <Icon className="w-6 h-6" />
+              <Icon className="w-5 sm:w-6 h-5 sm:h-6" />
             </motion.div>
             <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-base mb-1">
+              <h4 className="font-bold text-sm sm:text-base mb-0.5 sm:mb-1 leading-tight">
                 {notification.title}
               </h4>
-              <p className="text-sm opacity-95 break-words">
+              <p className="text-xs sm:text-sm opacity-95 break-words leading-snug">
                 {notification.message}
               </p>
             </div>

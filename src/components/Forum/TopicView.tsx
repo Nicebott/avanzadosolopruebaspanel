@@ -84,96 +84,98 @@ const TopicView: React.FC<TopicViewProps> = ({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-3 sm:px-0">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
+    <div className="w-full max-w-4xl mx-auto px-2 sm:px-3 md:px-0">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-6">
         <button
           onClick={onBack}
-          className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm md:text-base ${
             darkMode
               ? 'text-gray-300 hover:text-white hover:bg-gray-800'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           } transition-all duration-200`}
         >
-          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-          <span className="text-sm sm:text-base">Volver a los temas</span>
+          <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+          <span>Volver a los temas</span>
         </button>
 
         {auth.currentUser?.uid === topic.creador && (
           <button
             onClick={handleDelete}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm md:text-base ${
               darkMode
                 ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50'
                 : 'bg-red-50 text-red-500 hover:bg-red-100'
             } transition-colors duration-200`}
           >
-            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="text-sm sm:text-base">Eliminar tema</span>
+            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+            <span className="hidden xs:inline">Eliminar tema</span>
+            <span className="xs:hidden">Eliminar</span>
           </button>
         )}
 
         {isAdmin && auth.currentUser?.uid !== topic.creador && (
           <button
             onClick={handleDelete}
-            className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm md:text-base ${
               darkMode
                 ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50'
                 : 'bg-red-50 text-red-500 hover:bg-red-100'
             } transition-colors duration-200`}
           >
-            <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="text-sm sm:text-base">Eliminar tema (Admin)</span>
+            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+            <span className="hidden xs:inline">Eliminar (Admin)</span>
+            <span className="xs:hidden">Eliminar</span>
           </button>
         )}
       </div>
 
-      <div className={`p-4 sm:p-6 rounded-xl mb-4 sm:mb-6 ${
+      <div className={`p-3 sm:p-4 md:p-6 rounded-lg sm:rounded-xl mb-3 sm:mb-4 md:mb-6 ${
         darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
       } shadow-lg`}>
-        <h2 className={`text-xl sm:text-2xl font-bold mb-2 sm:mb-3 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+        <h2 className={`text-base sm:text-xl md:text-2xl font-bold mb-1.5 sm:mb-2 md:mb-3 ${darkMode ? 'text-white' : 'text-gray-900'} break-words`}>
           {topic.titulo}
         </h2>
-        <p className={`mb-3 sm:mb-4 text-sm sm:text-base ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+        <p className={`mb-2 sm:mb-3 md:mb-4 text-xs sm:text-sm md:text-base ${darkMode ? 'text-gray-300' : 'text-gray-600'} break-words`}>
           {topic.descripcion}
         </p>
-        <div className={`flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-          <div className={`flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full ${
+        <div className={`flex flex-wrap items-center gap-1.5 sm:gap-2 md:gap-3 text-[10px] sm:text-xs md:text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          <div className={`flex items-center gap-1.5 sm:gap-2 px-1.5 sm:px-2 md:px-3 py-0.5 sm:py-1 md:py-1.5 rounded-full ${
             darkMode ? 'bg-gray-700' : 'bg-gray-100'
           }`}>
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-white text-[10px] font-bold ${
+            <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center text-white text-[9px] sm:text-[10px] font-bold ${
               getAvatarColor(topic.creadorNombre)
             }`}>
               {getInitials(topic.creadorNombre)}
             </div>
-            <span className="font-medium">{topic.creadorNombre}</span>
+            <span className="font-medium truncate max-w-[100px] sm:max-w-none">{topic.creadorNombre}</span>
             {topic.isAdmin && (
-              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold ${
+              <span className={`inline-flex items-center gap-0.5 px-1 sm:px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] font-bold ${
                 darkMode
                   ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-orange-500/50'
                   : 'bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-md'
               }`}>
-                <Shield className="w-2.5 h-2.5" />
+                <Shield className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
                 ADMIN
               </span>
             )}
           </div>
           <span className="hidden sm:inline">·</span>
-          <span>
+          <span className="truncate">
             {formatDistanceToNow(topic.creadoEn.toDate(), { addSuffix: true, locale: es })}
           </span>
         </div>
       </div>
 
-      <div className={`rounded-xl mb-4 sm:mb-6 ${
+      <div className={`rounded-lg sm:rounded-xl mb-3 sm:mb-4 md:mb-6 ${
         darkMode ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
       } shadow-lg overflow-hidden`}>
-        <div className="h-[400px] sm:h-[500px] overflow-y-auto p-3 sm:p-6">
+        <div className="h-[350px] sm:h-[400px] md:h-[500px] overflow-y-auto p-2 sm:p-3 md:p-6">
           {messages.length === 0 ? (
-            <div className={`text-center py-8 text-sm sm:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <div className={`text-center py-6 sm:py-8 text-xs sm:text-sm md:text-base ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
               No hay respuestas aún. ¡Sé el primero en responder!
             </div>
           ) : (
-            <div className="space-y-3 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-3 md:space-y-6">
               <AnimatePresence initial={false}>
                 {messages.map((message, index) => (
                   <motion.div
@@ -184,49 +186,49 @@ const TopicView: React.FC<TopicViewProps> = ({
                     transition={{ duration: 0.2 }}
                     className={`${
                       darkMode ? 'bg-gray-700/50' : 'bg-gray-50'
-                    } rounded-lg p-3 sm:p-4`}
+                    } rounded-lg p-2 sm:p-3 md:p-4`}
                   >
-                    <div className="flex items-start gap-2 sm:gap-4 group">
-                      <div className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md ${
+                    <div className="flex items-start gap-1.5 sm:gap-2 md:gap-4 group">
+                      <div className={`flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-white font-bold text-[10px] sm:text-xs md:text-sm shadow-md ${
                         getAvatarColor(message.autorNombre)
                       }`}>
                         {getInitials(message.autorNombre)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start sm:items-center justify-between mb-1 gap-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className={`font-medium text-sm sm:text-base ${darkMode ? 'text-gray-200' : 'text-gray-900'}`}>
+                        <div className="flex items-start sm:items-center justify-between mb-0.5 sm:mb-1 gap-1 sm:gap-2">
+                          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+                            <span className={`font-medium text-xs sm:text-sm md:text-base truncate max-w-[100px] sm:max-w-none ${darkMode ? 'text-gray-200' : 'text-gray-900'}`}>
                               {message.autorNombre}
                             </span>
                             {message.isAdmin && (
-                              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] md:text-xs font-bold ${
+                              <span className={`inline-flex items-center gap-0.5 px-1 sm:px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] md:text-xs font-bold ${
                                 darkMode
                                   ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-orange-500/50'
                                   : 'bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-md'
                               }`}>
-                                <Shield className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                                <Shield className="w-2 h-2 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3" />
                                 ADMIN
                               </span>
                             )}
                             {(isAdmin || message.autor === auth.currentUser?.uid) && (
                               <button
                                 onClick={() => handleDeleteMessage(message.id)}
-                                className={`opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 p-1 rounded ${
+                                className={`opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 p-0.5 sm:p-1 rounded ${
                                   darkMode
                                     ? 'text-gray-400 hover:text-red-400 hover:bg-gray-600'
                                     : 'text-gray-500 hover:text-red-500 hover:bg-gray-200'
                                 }`}
                                 title={isAdmin && message.autor !== auth.currentUser?.uid ? "Eliminar mensaje (Admin)" : "Eliminar mensaje"}
                               >
-                                <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                                <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
                               </button>
                             )}
                           </div>
-                          <span className={`text-xs sm:text-sm flex-shrink-0 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          <span className={`text-[10px] sm:text-xs md:text-sm flex-shrink-0 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                             {formatDistanceToNow(message.creadoEn.toDate(), { addSuffix: true, locale: es })}
                           </span>
                         </div>
-                        <p className={`text-sm sm:text-base whitespace-pre-wrap break-words ${
+                        <p className={`text-xs sm:text-sm md:text-base whitespace-pre-wrap break-words ${
                           darkMode ? 'text-gray-300' : 'text-gray-600'
                         }`}>
                           {message.contenido}
@@ -241,14 +243,14 @@ const TopicView: React.FC<TopicViewProps> = ({
           <div ref={messagesEndRef} />
         </div>
 
-        <div className={`p-3 sm:p-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-          <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3">
+        <div className={`p-2 sm:p-3 md:p-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <form onSubmit={handleSubmit} className="flex gap-1.5 sm:gap-2 md:gap-3">
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Escribe un mensaje..."
-              className={`flex-grow px-3 sm:px-4 py-2.5 rounded-lg text-sm sm:text-base ${
+              className={`flex-grow px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm md:text-base ${
                 darkMode
                   ? 'bg-gray-700 text-white placeholder-gray-400 border-gray-600'
                   : 'bg-gray-50 text-gray-900 placeholder-gray-500 border-gray-300'
@@ -257,7 +259,7 @@ const TopicView: React.FC<TopicViewProps> = ({
             <button
               type="submit"
               disabled={!newMessage.trim()}
-              className={`flex-shrink-0 px-3 sm:px-6 py-2.5 rounded-lg flex items-center justify-center gap-2 ${
+              className={`flex-shrink-0 px-2.5 sm:px-3 md:px-6 py-2 sm:py-2.5 rounded-lg flex items-center justify-center gap-1.5 sm:gap-2 ${
                 newMessage.trim()
                   ? 'bg-blue-600 hover:bg-blue-700 text-white'
                   : darkMode
@@ -265,8 +267,8 @@ const TopicView: React.FC<TopicViewProps> = ({
                     : 'bg-gray-100 text-gray-400'
               } transition-all duration-200 disabled:cursor-not-allowed`}
             >
-              <Send className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline font-medium">Enviar</span>
+              <Send className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
+              <span className="hidden sm:inline font-medium text-xs md:text-sm">Enviar</span>
             </button>
           </form>
         </div>

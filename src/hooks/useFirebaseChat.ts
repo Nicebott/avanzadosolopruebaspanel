@@ -54,14 +54,15 @@ export function useFirebaseChat(isOpen: boolean) {
     }
   }, [isOpen]);
 
-  const sendMessage = useCallback(async (text: string, username: string, isAdmin: boolean) => {
+  const sendMessage = useCallback(async (text: string, username: string, isAdmin: boolean, photoURL?: string | null) => {
     try {
       const chatRef = ref(db, 'chat');
       await push(chatRef, {
         text,
         timestamp: Date.now(),
         username,
-        isAdmin
+        isAdmin,
+        photoURL: photoURL || null
       });
       return true;
     } catch (error) {

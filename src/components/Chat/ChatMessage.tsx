@@ -3,6 +3,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { motion } from 'framer-motion';
 import { Trash2, Shield } from 'lucide-react';
+import { getInitials, getAvatarColor } from '../../utils/avatarUtils';
 
 interface ChatMessageProps {
   message: {
@@ -11,6 +12,7 @@ interface ChatMessageProps {
     timestamp: number;
     username: string;
     isAdmin: boolean;
+    photoURL?: string | null;
   };
   darkMode: boolean;
   isCurrentUser: boolean;
@@ -36,18 +38,34 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       animate={{ opacity: 1, y: 0 }}
       className={`mb-3 md:mb-4 ${isCurrentUser ? 'ml-auto' : 'mr-auto'} relative group`}
     >
-      <div
-        className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 md:px-4 py-2 ${
+      <div className="flex items-start gap-2">
+        {!isCurrentUser && (
+          <div className="flex-shrink-0 mt-1">
+            {message.photoURL ? (
+              <img
+                src={message.photoURL}
+                alt={message.username}
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${getAvatarColor(message.username)}`}>
+                {getInitials(message.username)}
+              </div>
+            )}
+          </div>
+        )}
+        <div
+          className={`max-w-[85%] md:max-w-[80%] rounded-lg px-3 md:px-4 py-2 ${
           isCurrentUser
             ? darkMode
-              ? 'bg-blue-600 ml-auto'
+              ? 'bg-blue-600'
               : 'bg-blue-500'
             : darkMode
               ? 'bg-gray-700'
               : 'bg-gray-100'
-        }`}
-      >
-        <div className="flex items-center gap-1 md:gap-2 mb-1 flex-wrap">
+        } ${isCurrentUser ? 'ml-auto' : ''}`}
+        >
+          <div className="flex items-center gap-1 md:gap-2 mb-1 flex-wrap">
           <div className="flex items-center gap-1">
             {message.isAdmin ? (
               <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] md:text-xs font-bold ${
@@ -105,6 +123,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
         }`}>
           {timeAgo}
         </span>
+        </div>
       </div>
     </motion.div>
   );

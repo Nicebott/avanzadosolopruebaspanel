@@ -8,6 +8,7 @@ export interface Topic {
   creadorNombre: string;
   creadoEn: Timestamp;
   mensajesCount?: number;
+  isAdmin?: boolean;
 }
 
 export interface Message {
@@ -16,4 +17,5 @@ export interface Message {
   autor: string;
   autorNombre: string;
   creadoEn: Timestamp;
+  isAdmin?: boolean;
 }

@@ -1,37 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 import { useFirebaseChat } from '../hooks/useFirebaseChat';
 import ChatMessages from './Chat/ChatMessages';
 import ChatInput from './Chat/ChatInput';
-import LoginForm from './Chat/LoginForm';
-import { ref, get } from 'firebase/database';
-import { db } from '../firebase';
+import { auth } from '../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { getCurrentUserAdminStatus } from '../services/adminService';
 
 interface ChatProps {
   darkMode?: boolean;
+  onAuthRequired?: () => void;
 }
 
-const verifyAdminPassword = async (password: string): Promise<boolean> => {
-  try {
-    const adminRef = ref(db, 'user/admin');
-    const snapshot = await get(adminRef);
-    const adminData = snapshot.val();
-    
-    if (adminData && adminData.password === password) {
-      return true;
-    }
-    return false;
-  } catch (error) {
-    console.error('Error verifying admin:', error);
-    return false;
-  }
-};
-
-const Chat: React.FC<ChatProps> = ({ darkMode = false }) => {
+const Chat: React.FC<ChatProps> = ({ darkMode = false, onAuthRequired }) => {
   const [username, setUsername] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isUsernameSet, setIsUsernameSet] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [hasAcceptedRules, setHasAcceptedRules] = useState(false);
+  const [userPhotoURL, setUserPhotoURL] = useState<string | null>(null);
 
   const {
     messages,
@@ -42,29 +29,34 @@ const Chat: React.FC<ChatProps> = ({ darkMode = false }) => {
     deleteMessage
   } = useFirebaseChat(isChatOpen);
 
-  const handleLogin = async (username: string, password: string) => {
-    if (username.trim()) {
-      if (username.toLowerCase() === 'admin') {
-        const isValidAdmin = await verifyAdminPassword(password);
-        if (isValidAdmin) {
-          setIsAdmin(true);
-          setUsername(username);
-          setIsUsernameSet(true);
-        } else {
-          alert('Contraseña de administrador incorrecta');
-        }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        setUsername(user.displayName || user.email?.split('@')[0] || 'Usuario');
+        setUserPhotoURL(user.photoURL);
+        const adminStatus = await getCurrentUserAdminStatus();
+        setIsAdmin(adminStatus);
       } else {
-        setUsername(username);
-        setIsUsernameSet(true);
+        setIsAuthenticated(false);
+        setUsername('');
+        setUserPhotoURL(null);
+        setIsAdmin(false);
       }
-    }
-  };
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleSendMessage = async (text: string) => {
-    const success = await sendMessage(text, username, isAdmin);
+    const success = await sendMessage(text, username, isAdmin, userPhotoURL);
     if (!success) {
       alert('Error al enviar el mensaje. Por favor, intenta de nuevo.');
     }
+  };
+
+  const handleJoinChat = () => {
+    setHasAcceptedRules(true);
   };
 
   const handleDeleteMessage = async (messageId: string) => {
@@ -109,8 +101,42 @@ const Chat: React.FC<ChatProps> = ({ darkMode = false }) => {
           </div>
 
           <div className="p-3 md:p-4">
-            {!isUsernameSet ? (
-              <LoginForm onLogin={handleLogin} darkMode={darkMode} />
+            {!isAuthenticated ? (
+              <div className={`text-center py-8 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                <MessageCircle className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p className="mb-4">Inicia sesión para usar el chat</p>
+                <button
+                  onClick={() => {
+                    setIsChatOpen(false);
+                    onAuthRequired?.();
+                  }}
+                  className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  Iniciar Sesión
+                </button>
+              </div>
+            ) : !hasAcceptedRules ? (
+              <div className={`text-center py-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                <MessageCircle className="w-16 h-16 mx-auto mb-4 text-blue-500" />
+                <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  ¡Bienvenido al Chat!
+                </h3>
+                <p className="mb-6 text-sm">
+                  Conéctate con otros estudiantes en tiempo real
+                </p>
+                <button
+                  onClick={handleJoinChat}
+                  className="bg-blue-500 text-white px-6 py-2.5 rounded-lg hover:bg-blue-600 transition-colors font-medium"
+                >
+                  Ingresar al Chat
+                </button>
+                <p className={`text-xs mt-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Al unirte, aceptas nuestras{' '}
+                  <span className="text-blue-500 cursor-pointer hover:underline">
+                    normas de comunidad
+                  </span>
+                </p>
+              </div>
             ) : (
               <>
                 <ChatMessages

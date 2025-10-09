@@ -26,4 +26,5 @@ export interface Message {
   timestamp: number;
   username: string;
   isAdmin: boolean;
+  photoURL?: string | null;
 }

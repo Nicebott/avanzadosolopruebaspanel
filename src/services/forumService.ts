@@ -45,6 +45,7 @@ export const getTopicMessages = async (topicId: string): Promise<Message[]> => {
 
 export const createTopic = async (title: string, description: string, userId: string, displayName: string): Promise<string | null> => {
   try {
+    const isAdmin = await checkIsAdmin(userId);
     const topicsRef = collection(firestore, 'foros');
     const docRef = await addDoc(topicsRef, {
       titulo: title,
@@ -52,7 +53,8 @@ export const createTopic = async (title: string, description: string, userId: st
       creador: userId,
       creadorNombre: displayName,
       creadoEn: Timestamp.now(),
-      mensajesCount: 0
+      mensajesCount: 0,
+      isAdmin: isAdmin
     });
     return docRef.id;
   } catch (error) {
@@ -63,6 +65,7 @@ export const createTopic = async (title: string, description: string, userId: st
 
 export const createMessage = async (topicId: string, content: string, userId: string, displayName: string): Promise<string | null> => {
   try {
+    const isAdmin = await checkIsAdmin(userId);
     const messagesRef = collection(firestore, `foros/${topicId}/mensajes`);
     const topicRef = doc(firestore, `foros/${topicId}`);
 
@@ -70,7 +73,8 @@ export const createMessage = async (topicId: string, content: string, userId: st
       contenido: content,
       autor: userId,
       autorNombre: displayName,
-      creadoEn: Timestamp.now()
+      creadoEn: Timestamp.now(),
+      isAdmin: isAdmin
     });
 
     await updateDoc(topicRef, {

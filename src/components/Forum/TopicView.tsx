@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Topic, Message } from '../../types/forum';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { Send, ArrowLeft, User, Trash2 } from 'lucide-react';
+import { Send, ArrowLeft, User, Trash2, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { auth } from '../../firebase';
 import { deleteTopic, deleteMessage } from '../../services/forumService';
@@ -146,6 +146,16 @@ const TopicView: React.FC<TopicViewProps> = ({
               {getInitials(topic.creadorNombre)}
             </div>
             <span className="font-medium">{topic.creadorNombre}</span>
+            {topic.isAdmin && (
+              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                darkMode
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-orange-500/50'
+                  : 'bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-md'
+              }`}>
+                <Shield className="w-2.5 h-2.5" />
+                ADMIN
+              </span>
+            )}
           </div>
           <span className="hidden sm:inline">·</span>
           <span>
@@ -188,6 +198,16 @@ const TopicView: React.FC<TopicViewProps> = ({
                             <span className={`font-medium text-sm sm:text-base ${darkMode ? 'text-gray-200' : 'text-gray-900'}`}>
                               {message.autorNombre}
                             </span>
+                            {message.isAdmin && (
+                              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] md:text-xs font-bold ${
+                                darkMode
+                                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-orange-500/50'
+                                  : 'bg-gradient-to-r from-amber-400 to-orange-400 text-white shadow-md'
+                              }`}>
+                                <Shield className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                                ADMIN
+                              </span>
+                            )}
                             {(isAdmin || message.autor === auth.currentUser?.uid) && (
                               <button
                                 onClick={() => handleDeleteMessage(message.id)}

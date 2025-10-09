@@ -5,6 +5,7 @@ import { firestore } from '../firebase';
 import toast from 'react-hot-toast';
 import { auth } from '../firebase';
 import ReviewForm from './Reviews/ReviewForm';
+import { getCurrentUserAdminStatus } from '../services/adminService';
 
 interface ReviewModalProps {
   isOpen: boolean;
@@ -38,13 +39,15 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
     setLoading(true);
 
     try {
+      const isAdmin = await getCurrentUserAdminStatus();
       const reviewsCollection = collection(firestore, 'reviews');
       await addDoc(reviewsCollection, {
         professorId,
         userId,
         userName: auth.currentUser?.displayName || 'Usuario Anónimo',
         ...review,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        isAdmin: isAdmin
       });
 
       toast.success('¡Reseña enviada exitosamente!');

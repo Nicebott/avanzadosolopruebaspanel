@@ -423,7 +423,7 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
         </div>
       </footer>
 
-      <Chat darkMode={darkMode} />
+      <Chat darkMode={darkMode} onAuthRequired={() => setIsAuthModalOpen(true)} />
       
       <AuthModal
         isOpen={isAuthModalOpen}

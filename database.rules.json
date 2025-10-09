@@ -12,6 +12,22 @@
         ".read": "auth != null && auth.uid === $userId",
         ".write": "auth != null && auth.uid === $userId"
       }
+    },
+    "userNotifications": {
+      "$userId": {
+        ".read": "auth != null && auth.uid === $userId",
+        ".write": "auth != null"
+      }
+    },
+    "users": {
+      ".read": "auth != null",
+      "$userId": {
+        ".write": "auth != null && auth.uid === $userId"
+      }
+    },
+    "admins": {
+      ".read": "auth != null",
+      ".write": "auth != null"
     }
   }
 }

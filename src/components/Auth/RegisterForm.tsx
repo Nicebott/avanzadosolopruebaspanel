@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, UserPlus } from 'lucide-react';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../../firebase';
+import { ref, set } from 'firebase/database';
+import { auth, db } from '../../firebase';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import AuthInput from './AuthInput';
@@ -33,6 +34,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ darkMode, onClose }) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, {
         displayName: name
+      });
+
+      await set(ref(db, `users/${userCredential.user.uid}`), {
+        displayName: name,
+        email: email,
+        createdAt: Date.now()
       });
 
       toast.success('¡Cuenta creada exitosamente!');

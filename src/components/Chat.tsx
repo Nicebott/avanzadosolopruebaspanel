@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useFirebaseChat } from '../hooks/useFirebaseChat';
 import ChatMessages from './Chat/ChatMessages';
 import ChatInput from './Chat/ChatInput';
@@ -132,9 +133,13 @@ const Chat: React.FC<ChatProps> = ({ darkMode = false, onAuthRequired }) => {
                 </button>
                 <p className={`text-xs mt-4 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                   Al unirte, aceptas nuestras{' '}
-                  <span className="text-blue-500 cursor-pointer hover:underline">
+                  <Link
+                    to="/normas-comunidad"
+                    className="text-blue-500 cursor-pointer hover:underline"
+                    onClick={() => setIsChatOpen(false)}
+                  >
                     normas de comunidad
-                  </span>
+                  </Link>
                 </p>
               </div>
             ) : (

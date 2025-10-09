@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import CommunityGuidelinesPage from './pages/CommunityGuidelinesPage';
 import './index.css';
 
 const Root = () => {
@@ -26,6 +27,7 @@ const Root = () => {
         <Route path="/" element={<App darkMode={darkMode} setDarkMode={setDarkMode} />} />
         <Route path="/terminos" element={<TermsPage darkMode={darkMode} />} />
         <Route path="/privacidad" element={<PrivacyPage darkMode={darkMode} />} />
+        <Route path="/normas-comunidad" element={<CommunityGuidelinesPage darkMode={darkMode} />} />
       </Routes>
     </BrowserRouter>
   );

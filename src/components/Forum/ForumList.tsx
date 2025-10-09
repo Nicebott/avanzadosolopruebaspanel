@@ -129,4 +129,4 @@ const ForumList: React.FC<ForumListProps> = ({ topics, onTopicClick, onNewTopic,
   );
 };
 
-export default ForumList;
+export default ForumList; 

@@ -138,11 +138,15 @@ function App({ darkMode: darkModeProp, setDarkMode: setDarkModeProp }: AppProps)
       const matchesCampus = !selectedCampus || section.campus === selectedCampus;
       
       const modalidad = section.modalidad.toLowerCase();
-      const matchesModality = !selectedModality || 
-        (selectedModality === 'virtual' && modalidad.includes('online')) ||
+      const matchesModality = !selectedModality ||
+        (selectedModality === 'virtual' && (
+          modalidad.includes('online') ||
+          modalidad.includes('virtual') ||
+          modalidad.includes('por internet')
+        )) ||
         (selectedModality === 'semipresencial' && (
-          modalidad.includes('semi') || 
-          modalidad.includes('semipresencial') || 
+          modalidad.includes('semi') ||
+          modalidad.includes('semipresencial') ||
           modalidad.includes('semi presencial')
         ));
 

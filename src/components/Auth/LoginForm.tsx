@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, LogIn } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { ref, set, get } from 'firebase/database';
-import { auth, db } from '../../firebase';
+import { auth } from '../../firebase';
 import toast from 'react-hot-toast';
 import AuthInput from './AuthInput';
 
@@ -22,19 +21,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ darkMode, onClose }) => {
     setLoading(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
-      const userRef = ref(db, `users/${userCredential.user.uid}`);
-      const snapshot = await get(userRef);
-
-      if (!snapshot.exists()) {
-        await set(userRef, {
-          displayName: userCredential.user.displayName || userCredential.user.email?.split('@')[0] || 'Usuario',
-          email: userCredential.user.email,
-          createdAt: Date.now()
-        });
-      }
-
+      await signInWithEmailAndPassword(auth, email, password);
       toast.success('¡Inicio de sesión exitoso!');
       onClose();
     } catch (error: any) {

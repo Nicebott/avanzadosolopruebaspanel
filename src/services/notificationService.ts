@@ -65,8 +65,7 @@ export const getUserNotifications = async (): Promise<Notification[]> => {
     const notificationsRef = ref(db, 'notifications');
     const snapshot = await get(notificationsRef);
 
-    const userNotificationsRef = ref(db, `userNotifications/${user.uid}`);
-    const userSnapshot = await get(userNotificationsRef);
+    if (!snapshot.exists()) return [];
 
     const userReadStatusRef = ref(db, `userNotificationStatus/${user.uid}`);
     const readStatusSnapshot = await get(userReadStatusRef);
@@ -79,27 +78,13 @@ export const getUserNotifications = async (): Promise<Notification[]> => {
     }
 
     const notifications: Notification[] = [];
-
-    if (snapshot.exists()) {
-      snapshot.forEach((child) => {
-        notifications.push({
-          id: child.key!,
-          ...child.val(),
-          read: readStatus[child.key!] || false
-        });
+    snapshot.forEach((child) => {
+      notifications.push({
+        id: child.key!,
+        ...child.val(),
+        read: readStatus[child.key!] || false
       });
-    }
-
-    if (userSnapshot.exists()) {
-      userSnapshot.forEach((child) => {
-        const notifData = child.val();
-        notifications.push({
-          id: child.key!,
-          ...notifData,
-          read: notifData.read || false
-        });
-      });
-    }
+    });
 
     return notifications.sort((a, b) => b.createdAt - a.createdAt);
   } catch (error) {
@@ -113,21 +98,11 @@ export const markNotificationAsRead = async (notificationId: string): Promise<bo
     const user = auth.currentUser;
     if (!user) return false;
 
-    const userNotificationRef = ref(db, `userNotifications/${user.uid}/${notificationId}`);
-    const snapshot = await get(userNotificationRef);
-
-    if (snapshot.exists()) {
-      await update(userNotificationRef, {
-        read: true,
-        readAt: Date.now()
-      });
-    } else {
-      const userNotificationStatusRef = ref(db, `userNotificationStatus/${user.uid}/${notificationId}`);
-      await update(userNotificationStatusRef, {
-        read: true,
-        readAt: Date.now()
-      });
-    }
+    const userNotificationRef = ref(db, `userNotificationStatus/${user.uid}/${notificationId}`);
+    await update(userNotificationRef, {
+      read: true,
+      readAt: Date.now()
+    });
 
     return true;
   } catch (error) {
@@ -180,11 +155,9 @@ export const subscribeToNotifications = (callback: (notifications: Notification[
   if (!user) return () => {};
 
   const notificationsRef = ref(db, 'notifications');
-  const userNotificationsRef = ref(db, `userNotifications/${user.uid}`);
   const userReadStatusRef = ref(db, `userNotificationStatus/${user.uid}`);
 
   let notificationsData: { [key: string]: any } = {};
-  let userNotificationsData: { [key: string]: any } = {};
   let readStatusData: { [key: string]: boolean } = {};
 
   const processNotifications = () => {
@@ -198,39 +171,20 @@ export const subscribeToNotifications = (callback: (notifications: Notification[
       });
     });
 
-    Object.keys(userNotificationsData).forEach((key) => {
-      notifications.push({
-        id: key,
-        ...userNotificationsData[key],
-        read: userNotificationsData[key].read || false
-      });
-    });
-
     callback(notifications.sort((a, b) => b.createdAt - a.createdAt));
   };
 
   const notificationsListener = onValue(notificationsRef, (snapshot) => {
-    console.log('[NotificationService] Notificaciones globales actualizadas');
+    console.log('[NotificationService] Notificaciones actualizadas en Firebase');
     if (snapshot.exists()) {
       notificationsData = {};
       snapshot.forEach((child) => {
         notificationsData[child.key!] = child.val();
       });
+      console.log('[NotificationService] Total de notificaciones:', Object.keys(notificationsData).length);
     } else {
       notificationsData = {};
-    }
-    processNotifications();
-  });
-
-  const userNotificationsListener = onValue(userNotificationsRef, (snapshot) => {
-    console.log('[NotificationService] Notificaciones personales actualizadas');
-    if (snapshot.exists()) {
-      userNotificationsData = {};
-      snapshot.forEach((child) => {
-        userNotificationsData[child.key!] = child.val();
-      });
-    } else {
-      userNotificationsData = {};
+      console.log('[NotificationService] No hay notificaciones en Firebase');
     }
     processNotifications();
   });
@@ -249,7 +203,6 @@ export const subscribeToNotifications = (callback: (notifications: Notification[
 
   return () => {
     off(notificationsRef, 'value', notificationsListener);
-    off(userNotificationsRef, 'value', userNotificationsListener);
     off(userReadStatusRef, 'value', readStatusListener);
   };
 };
@@ -261,104 +214,5 @@ export const getUnreadNotificationCount = async (): Promise<number> => {
   } catch (error) {
     console.error('Error getting unread count:', error);
     return 0;
-  }
-};
-
-export const getUserIdByDisplayName = async (displayName: string): Promise<string | null> => {
-  try {
-    const usersRef = ref(db, 'users');
-    const snapshot = await get(usersRef);
-
-    if (!snapshot.exists()) {
-      console.log('No users found in database');
-      return null;
-    }
-
-    const searchName = displayName.toLowerCase().trim();
-    let foundUserId: string | null = null;
-    const allUsers: string[] = [];
-
-    snapshot.forEach((child) => {
-      const userData = child.val();
-      if (userData.displayName) {
-        allUsers.push(userData.displayName);
-        if (userData.displayName.toLowerCase().trim() === searchName) {
-          foundUserId = child.key;
-          return true;
-        }
-      }
-    });
-
-    if (!foundUserId) {
-      console.log(`User with displayName "${displayName}" not found`);
-      console.log('Available users:', allUsers);
-    }
-
-    return foundUserId;
-  } catch (error) {
-    console.error('Error getting user by displayName:', error);
-    return null;
-  }
-};
-
-export const searchUsersByDisplayName = async (searchTerm: string): Promise<Array<{id: string, displayName: string, email: string}>> => {
-  try {
-    const usersRef = ref(db, 'users');
-    const snapshot = await get(usersRef);
-
-    if (!snapshot.exists()) {
-      return [];
-    }
-
-    const searchLower = searchTerm.toLowerCase().trim();
-    const results: Array<{id: string, displayName: string, email: string}> = [];
-
-    snapshot.forEach((child) => {
-      const userData = child.val();
-      if (userData.displayName && userData.displayName.toLowerCase().includes(searchLower)) {
-        results.push({
-          id: child.key!,
-          displayName: userData.displayName,
-          email: userData.email || ''
-        });
-      }
-    });
-
-    return results;
-  } catch (error) {
-    console.error('Error searching users:', error);
-    return [];
-  }
-};
-
-export const createUserNotification = async (
-  userId: string,
-  title: string,
-  message: string,
-  type: 'info' | 'warning' | 'success' | 'error'
-): Promise<boolean> => {
-  try {
-    const user = auth.currentUser;
-    if (!user) {
-      console.error('Usuario no autenticado');
-      return false;
-    }
-
-    const userNotificationsRef = ref(db, `userNotifications/${userId}`);
-    const newNotification = {
-      title,
-      message,
-      type,
-      createdAt: Date.now(),
-      createdBy: user.uid,
-      createdByEmail: user.email || 'Admin',
-      read: false
-    };
-
-    await push(userNotificationsRef, newNotification);
-    return true;
-  } catch (error) {
-    console.error('Error creating user notification:', error);
-    return false;
   }
 };
